@@ -14,7 +14,7 @@ class PageableDataManager<T: Identifiable>: ObservableObject {
     //The total items which should be set by the fetchItemsFromAPI function call in a subclass
     @Published private(set) var totalItems: Int = 0
     //The page that will be loaded next
-    @Published private(set) var currentPage = 0
+    @Published private(set) var nextPage = 0
     
     /**
      Resets the data to its initial state and loads the first page again.
@@ -22,7 +22,7 @@ class PageableDataManager<T: Identifiable>: ObservableObject {
     func reloadItems() async throws {
         await withCheckedContinuation { continuation in
             DispatchQueue.main.async {
-                self.currentPage = 0
+                self.nextPage = 0
                 self.items = []
                 self.totalItems = 0
                 self.hasReachedEndOfItems = false
@@ -52,23 +52,29 @@ class PageableDataManager<T: Identifiable>: ObservableObject {
         let (newItems, totalItems) = try await fetchItemsFromAPI()
         //If a total count is available and has not already been set, set our stored total count. Checking if it's already been set avoids publishing changes unnecessarily
         if let totalItems, totalItems != self.totalItems {
-            DispatchQueue.main.async {
-                self.totalItems = totalItems
+            await withCheckedContinuation { continuation in
+                DispatchQueue.main.async {
+                    self.totalItems = totalItems
+                    continuation.resume()
+                }
             }
         }
         //Perform changes to published variables on the main thread
-        DispatchQueue.main.async {
-            //Advance the current page
-            self.currentPage += 1
-            //Add the new items to the list
-            self.items += newItems
-            //If we have reached the set total items or we have successfully retrieved an empty list, stop loading future pages
-            if self.items.count == totalItems || newItems.isEmpty {
-                self.hasReachedEndOfItems = true
-                //Set the total count if it hasn't already been set
-                if self.totalItems != self.items.count {
-                    self.totalItems = self.items.count
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                //Advance the current page
+                self.nextPage += 1
+                //Add the new items to the list
+                self.items += newItems
+                //If we have reached the set total items or we have successfully retrieved an empty list, stop loading future pages
+                if self.items.count == totalItems || newItems.isEmpty {
+                    self.hasReachedEndOfItems = true
+                    //Set the total count if it hasn't already been set
+                    if self.totalItems != self.items.count {
+                        self.totalItems = self.items.count
+                    }
                 }
+                continuation.resume()
             }
         }
     }
