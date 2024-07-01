@@ -3,7 +3,7 @@
 
 import SwiftUI
 @available(iOS 14.0, *)
-public class PageableDataManager<T: Identifiable>: ObservableObject {
+open class PageableDataManager<T: Identifiable>: ObservableObject {
     //Tracks if the pageable data is currently being fetched
     @Published private(set) var loading = false
     //Is true if the most recent page of data either matches the size of the total items given from the response or was empty
@@ -23,7 +23,7 @@ public class PageableDataManager<T: Identifiable>: ObservableObject {
     /**
      Resets the data to its initial state and loads the first page again.
      */
-    public func reloadItems() async throws {
+    open func reloadItems() async throws {
         await withCheckedContinuation { continuation in
             DispatchQueue.main.async {
                 self.nextPage = 0
@@ -39,7 +39,7 @@ public class PageableDataManager<T: Identifiable>: ObservableObject {
     /**
      Loads the next page of pageable data and sets the internal values appropriately based on the results. Will advance the page upon successful page load.
      */
-    public final func getNextPage() async throws {
+    final func getNextPage() async throws {
         //If we have reached the end of the data, don't load anything else
         guard !hasReachedEndOfItems else { return }
         
@@ -86,7 +86,7 @@ public class PageableDataManager<T: Identifiable>: ObservableObject {
     /**
      Returns the data for the current page. This should be implemented by any subclass to provide the data.
      */
-    public func fetchItemsFromAPI() async throws -> ([T], Int?) {
+    open func fetchItemsFromAPI() async throws -> ([T], Int?) {
         fatalError("Must implement getMoreItems in subclass")
     }
 }
