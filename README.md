@@ -17,7 +17,7 @@ class PageablePokemonListManager: PageableDataManager<Pokemon> {
     let pageSize: Int = 30
     
     override func fetchItemsFromAPI() async throws -> ([Pokemon], Int?) {
-        var request = URLRequest(url: .init(string: "https://pokeapi.co/api/v2/pokemon?limit=\(pageSize)&offset=\(pageSize * currentPage)")!, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
+        var request = URLRequest(url: .init(string: "https://pokeapi.co/api/v2/pokemon?limit=\(pageSize)&offset=\(pageSize * nextPage)")!, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
         request.httpMethod = "GET"
         
         let (data, _) = try await URLSession.shared.data(for: request)
@@ -41,7 +41,7 @@ struct ContentView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Page: \(manager.currentPage)")
+                Text("Page: \(manager.nextPage)")
                 Text("Loaded: \(manager.items.count)")
                 Text("Total: \(manager.totalItems)")
             }

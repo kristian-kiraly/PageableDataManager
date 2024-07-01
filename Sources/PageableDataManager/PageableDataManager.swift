@@ -5,16 +5,16 @@ import SwiftUI
 @available(iOS 14.0, *)
 open class PageableDataManager<T: Identifiable>: ObservableObject {
     //Tracks if the pageable data is currently being fetched
-    @Published private(set) var loading = false
+    @Published open private(set) var loading = false
     //Is true if the most recent page of data either matches the size of the total items given from the response or was empty
-    @Published private(set) var hasReachedEndOfItems = false
+    @Published open private(set) var hasReachedEndOfItems = false
     
     //The storage of all the pageable items
-    @Published public var items: [T] = []
+    @Published open var items: [T] = []
     //The total items which should be set by the fetchItemsFromAPI function call in a subclass
-    @Published private(set) var totalItems: Int = 0
+    @Published open private(set) var totalItems: Int = 0
     //The page that will be loaded next
-    @Published private(set) var nextPage = 0
+    @Published open private(set) var nextPage = 0
     
     public init() {
         
