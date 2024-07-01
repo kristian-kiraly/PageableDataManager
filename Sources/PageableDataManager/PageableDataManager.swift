@@ -16,6 +16,10 @@ public class PageableDataManager<T: Identifiable>: ObservableObject {
     //The page that will be loaded next
     @Published private(set) var nextPage = 0
     
+    public init() {
+        
+    }
+    
     /**
      Resets the data to its initial state and loads the first page again.
      */
