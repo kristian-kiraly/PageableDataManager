@@ -104,6 +104,14 @@ public struct PageableLazyScrollView<T: Identifiable, Content: View>: View {
     //Store a property that will make sure our loading view triggers the loading action even if it never left the screen by hiding it briefly when loading completes
     @State private var shouldShowProgressView = true
     
+    public init(manager: PageableDataManager<T>, alignment: HorizontalAlignment = .center, spacing: CGFloat? = nil, pinnedViews: PinnedScrollableViews = [], content: @escaping () -> Content) {
+        self.manager = manager
+        self.alignment = alignment
+        self.spacing = spacing
+        self.pinnedViews = pinnedViews
+        self.content = content
+    }
+    
     public var body: some View {
         //Avoiding deprecated onChange with only one parameter
         if #available(iOS 17, *) {
